@@ -301,7 +301,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <div class="actions"><button class="btn small ghost" type="button" id="sigClear">Wissen</button></div>
       <p class="hint">Teken met je vinger of muis. Is dit leeg, dan staat er geen handtekening op de Excel.</p>
     </fieldset>
-    <p class="hint" id="verLine">Versie 17-11 16:41</p>
+    <p class="hint" id="verLine">Versie 17-11 16:45</p>
     <p class="err" id="setupErr" role="alert"></p>
     <div class="actions">
       <button class="btn primary" type="submit" id="setupSubmit">Opslaan en beginnen</button>
@@ -317,7 +317,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <p class="eyebrow" id="who"></p>
       <h1>Uren invoeren</h1>
     </div>
-    <div class="topright"><a class="icon-btn" href="https://mijn.loket.nl/login" target="_blank" rel="noopener" aria-label="Verlof regelen in Mijn Loket (opent in nieuw tabblad)" title="Mijn Loket: verlof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.5a8.5 8.5 0 0 1 17 0z"/><path d="M12 12.5L9 21"/><path d="M5 21h14"/><path d="M12 4V3"/></svg></a>
+    <div class="topright"><a class="icon-btn" href="https://login.loket.nl/?client=MijnLoket&amp;returnUrl=%2Flogin%2Fdashboard&amp;redirectUrl=https%3A%2F%2Fmijn.loket.nl%2Fsso%3Ftoken%3D{refresh_token" target="_blank" rel="noopener" aria-label="Verlof regelen in Mijn Loket (opent in nieuw tabblad)" title="Mijn Loket: verlof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.5a8.5 8.5 0 0 1 17 0z"/><path d="M12 12.5L9 21"/><path d="M5 21h14"/><path d="M12 4V3"/></svg></a>
     <button class="icon-btn" id="btnSettings" type="button" aria-label="Mijn gegevens aanpassen">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
     </button>
@@ -385,7 +385,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <p class="eyebrow" id="who2"></p>
       <h1>Maandoverzicht</h1>
     </div>
-    <div class="topright"><a class="icon-btn" href="https://mijn.loket.nl/login" target="_blank" rel="noopener" aria-label="Verlof regelen in Mijn Loket (opent in nieuw tabblad)" title="Mijn Loket: verlof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.5a8.5 8.5 0 0 1 17 0z"/><path d="M12 12.5L9 21"/><path d="M5 21h14"/><path d="M12 4V3"/></svg></a></div>
+    <div class="topright"><a class="icon-btn" href="https://login.loket.nl/?client=MijnLoket&amp;returnUrl=%2Flogin%2Fdashboard&amp;redirectUrl=https%3A%2F%2Fmijn.loket.nl%2Fsso%3Ftoken%3D{refresh_token" target="_blank" rel="noopener" aria-label="Verlof regelen in Mijn Loket (opent in nieuw tabblad)" title="Mijn Loket: verlof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.5a8.5 8.5 0 0 1 17 0z"/><path d="M12 12.5L9 21"/><path d="M5 21h14"/><path d="M12 4V3"/></svg></a></div>
   </header>
   <div class="legend" aria-label="Legenda">
     <span class="chip sent">Verstuurd</span>
@@ -1190,9 +1190,9 @@ function parseIcs(text, keywords, today) {
   document.querySelectorAll('.logo').forEach(function (i) { i.src = 'data:image/png;base64,' + LOGO_B64; });
   /* Mijn Loket: on Android outside the Claude viewer, hand the link to the device's default browser instead of an in-app tab. */
   if (/Android/i.test(navigator.userAgent) && !window.claude) {
-    document.querySelectorAll('a[href^="https://mijn.loket.nl"]').forEach(function (l) {
-      var u = 'https://mijn.loket.nl/login';
-      l.href = 'intent://mijn.loket.nl/login#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=' + encodeURIComponent(u) + ';end';
+    document.querySelectorAll('a[href^="https://login.loket.nl"]').forEach(function (l) {
+      var u = l.getAttribute('href');
+      l.href = 'intent://' + u.replace(/^https:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=' + encodeURIComponent(u) + ';end';
       l.removeAttribute('target');
     });
   }
