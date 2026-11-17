@@ -5,5 +5,5 @@ self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(
 // Network first so updates arrive; fall back to the cache when offline.
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
-  e.respondWith(fetch(e.request).then(function (r) { var copy = r.clone(); caches.open(CACHE).then(function (c) { c.put(e.request, copy); }); return r; }).catch(function () { return caches.match(e.request).then(function (m) { return m || caches.match('index.html'); }); }));
+  e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(function (r) { var copy = r.clone(); caches.open(CACHE).then(function (c) { c.put(e.request, copy); }); return r; }).catch(function () { return caches.match(e.request).then(function (m) { return m || caches.match('index.html'); }); }));
 });

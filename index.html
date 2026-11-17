@@ -301,6 +301,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <div class="actions"><button class="btn small ghost" type="button" id="sigClear">Wissen</button></div>
       <p class="hint">Teken met je vinger of muis. Is dit leeg, dan staat er geen handtekening op de Excel.</p>
     </fieldset>
+    <p class="hint" id="verLine">Versie 17-11 16:36</p>
     <p class="err" id="setupErr" role="alert"></p>
     <div class="actions">
       <button class="btn primary" type="submit" id="setupSubmit">Opslaan en beginnen</button>
@@ -1192,4 +1193,4 @@ function parseIcs(text, keywords, today) {
   if (!storageOk) toast('Opslaan op dit toestel is hier niet beschikbaar. Je gegevens blijven alleen bewaard zolang de pagina open staat.');
 })();
 </script>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script></body></html>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){r.update();}).catch(function(){});});}</script></body></html>
