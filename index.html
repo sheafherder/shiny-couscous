@@ -301,7 +301,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <div class="actions"><button class="btn small ghost" type="button" id="sigClear">Wissen</button></div>
       <p class="hint">Teken met je vinger of muis. Is dit leeg, dan staat er geen handtekening op de Excel.</p>
     </fieldset>
-    <p class="hint" id="verLine">Versie 17-11 16:36</p>
+    <p class="hint" id="verLine">Versie 17-11 16:41</p>
     <p class="err" id="setupErr" role="alert"></p>
     <div class="actions">
       <button class="btn primary" type="submit" id="setupSubmit">Opslaan en beginnen</button>
@@ -1188,6 +1188,14 @@ function parseIcs(text, keywords, today) {
 
   /* ---------- start ---------- */
   document.querySelectorAll('.logo').forEach(function (i) { i.src = 'data:image/png;base64,' + LOGO_B64; });
+  /* Mijn Loket: on Android outside the Claude viewer, hand the link to the device's default browser instead of an in-app tab. */
+  if (/Android/i.test(navigator.userAgent) && !window.claude) {
+    document.querySelectorAll('a[href^="https://mijn.loket.nl"]').forEach(function (l) {
+      var u = 'https://mijn.loket.nl/login';
+      l.href = 'intent://mijn.loket.nl/login#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=' + encodeURIComponent(u) + ';end';
+      l.removeAttribute('target');
+    });
+  }
   if (state) { loadDay(); renderLog(); show('log'); }
   else { openSetup(false); }
   if (!storageOk) toast('Opslaan op dit toestel is hier niet beschikbaar. Je gegevens blijven alleen bewaard zolang de pagina open staat.');
