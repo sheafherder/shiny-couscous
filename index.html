@@ -251,8 +251,8 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
     <input id="f-project" type="text" placeholder="Projectnaam">
     <fieldset>
       <legend>E-mailadres administratie</legend>
-      <div class="mailrow"><input id="f-mail" type="text" inputmode="email" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="******" aria-label="Deel van het e-mailadres vóór de apenstaart"><span class="suffix">@datatalent.nl</span></div>
-      <p class="hint">Vul eenmalig het ontbrekende deel van het adres in. Daar stuur je je urenstaat naartoe.</p>
+      <input id="f-mail" type="text" inputmode="email" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="******@datatalent.nl" aria-label="E-mailadres van de administratie">
+      <p class="hint">Daar stuur je je urenstaat naartoe. Typ je alleen het deel vóór de @, dan wordt @datatalent.nl toegevoegd. Voor testen kun je hier ook je eigen adres invullen.</p>
     </fieldset>
     <fieldset>
       <legend>Standaard werktijden per dag</legend>
@@ -326,7 +326,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <div class="actions"><button class="btn small ghost" type="button" id="sigClear">Wissen</button></div>
       <p class="hint">Teken met je vinger of muis. Is dit leeg, dan staat er geen handtekening op de Excel.</p>
     </fieldset>
-    <p class="hint" id="verLine">Versie 18-11 10:33</p>
+    <p class="hint" id="verLine">Versie 18-11 10:44</p>
     <p class="err" id="setupErr" role="alert"></p>
     <div class="actions">
       <button class="btn primary" type="submit" id="setupSubmit">Opslaan en beginnen</button>
@@ -1200,7 +1200,7 @@ function buildUrenstaatPdf(jsPDF, d) {
   'use strict';
   var NL = 'nl-NL';
   var DOMAIN = '@datatalent.nl', MASK = '******' + DOMAIN;
-  function adminMail() { var l = state && state.profile && state.profile.adminLocal; return l ? l + DOMAIN : ''; }
+  function adminMail() { var p = state && state.profile; return p ? (p.adminMail || (p.adminLocal ? p.adminLocal + DOMAIN : '')) : ''; }
   function adminShown() { return adminMail() || MASK; }
   var KEY = 'urenstaat.v1';
   var $ = function (id) { return document.getElementById(id); };
@@ -1269,7 +1269,7 @@ function buildUrenstaatPdf(jsPDF, d) {
     $('f-name').value = p ? p.medewerker : '';
     $('f-role').value = p ? p.functie : '';
     $('f-project').value = p ? p.project : '';
-    $('f-mail').value = p && p.adminLocal ? p.adminLocal : '';
+    $('f-mail').value = adminMail();
     calPending = undefined; $('calInfo').hidden = true; $('calInfoBtn').setAttribute('aria-expanded', 'false'); calStatusText();
     var wk = p ? p.week : [0, 1, 2, 3, 4, 5, 6].map(function (i) { return { on: i < 5, start: '09:00', end: '17:00', pause: i < 5 ? 30 : 0 }; });
     for (var wi = 0; wi < 7; wi++) {
@@ -1306,18 +1306,18 @@ function buildUrenstaatPdf(jsPDF, d) {
       }
       wk.push({ on: on, start: ws || '09:00', end: we || '17:00', pause: on ? wp : 0 });
     }
-    var ml = $('f-mail').value.trim().split('@')[0].trim().toLowerCase();
+    var ml = $('f-mail').value.trim().toLowerCase(); if (ml && ml.indexOf('@') < 0) ml += DOMAIN;
     var err = '';
     if (!name) err = 'Vul je naam in bij Medewerker.';
     else if (!role) err = 'Vul je functie in.';
     else if (!proj) err = 'Vul het project in.';
-    else if (!ml || !/^[a-z0-9._%+\-]+$/.test(ml)) err = 'Vul het deel van het e-mailadres in dat voor @datatalent.nl komt.';
+    else if (!/^[a-z0-9._%+\-]+@[a-z0-9\-]+(\.[a-z0-9\-]+)+$/.test(ml)) err = 'Vul een geldig e-mailadres in, bijvoorbeeld naam@datatalent.nl. Typ je alleen het deel vóór de @, dan wordt @datatalent.nl toegevoegd.';
     else if (wkErr) err = wkErr;
     else if (!anyOn) err = 'Zet minstens één werkdag aan bij de standaard werktijden.';
     if (err) { $('setupErr').textContent = err; return; }
     var start = $('f-year').value + '-' + pad(+$('f-month').value);
     state = {
-      profile: { medewerker: name, functie: role, project: proj, adminLocal: ml, week: wk, start: start },
+      profile: { medewerker: name, functie: role, project: proj, adminMail: ml, week: wk, start: start },
       entries: state ? state.entries : {},
       sent: state ? state.sent : {},
       supervisor: state ? state.supervisor : {},
