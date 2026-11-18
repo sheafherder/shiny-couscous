@@ -326,7 +326,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <div class="actions"><button class="btn small ghost" type="button" id="sigClear">Wissen</button></div>
       <p class="hint">Teken met je vinger of muis. Is dit leeg, dan staat er geen handtekening op de Excel.</p>
     </fieldset>
-    <p class="hint" id="verLine">Versie 18-11 10:51</p>
+    <p class="hint" id="verLine">Versie 18-11 10:53</p>
     <p class="err" id="setupErr" role="alert"></p>
     <div class="actions">
       <button class="btn primary" type="submit" id="setupSubmit">Opslaan en beginnen</button>
@@ -1676,7 +1676,9 @@ function buildUrenstaatPdf(jsPDF, d) {
     return shareCache;
   }
   /* Each tap tries one sharing variant; a refused variant moves on to the next one on the following tap (a browser uses up the tap on every attempt). */
-  var shareTry = 0;
+  var SHARE_KEY = 'urenstaat.share', shareTry = 0;
+  try { shareTry = Math.max(0, Math.min(3, parseInt(localStorage.getItem(SHARE_KEY), 10) || 0)); } catch (e) { }
+  function shareLabel() { return ['Excel + PDF', 'Excel + PDF', 'alleen PDF', 'alleen Excel'][shareTry % 4]; }
   var SHARE_STEPS = [
     { label: 'Excel + PDF', pick: function (c) { return c.both; }, text: true },
     { label: 'Excel + PDF zonder berichttekst', pick: function (c) { return c.both; }, text: false },
@@ -1700,7 +1702,8 @@ function buildUrenstaatPdf(jsPDF, d) {
         toast('Delen van ' + step.label + ' mislukt (' + ((err && err.name) || 'fout') + '). Tik nog eens op Delen om ' + (shareTry % SHARE_STEPS.length === 0 ? 'opnieuw te beginnen, of gebruik de downloadknoppen' : next.label + ' te proberen') + '.');
         return;
       }
-      if (files.length === 1) toast('Alleen ' + (files[0].type === 'application/pdf' ? 'de PDF' : 'de Excel') + ' is gedeeld. Download het andere bestand apart.');
+      try { localStorage.setItem(SHARE_KEY, String(shareTry % SHARE_STEPS.length)); } catch (e) { }
+      if (files.length === 1) toast('Alleen ' + (files[0].type === 'application/pdf' ? 'de PDF' : 'de Excel') + ' is gedeeld. Je browser deelt het andere bestand niet: download dat apart en voeg het toe aan de mail.');
     } catch (err2) {
       toast('Delen lukt niet (' + ((err2 && err2.name) || 'fout') + '). Gebruik de downloadknoppen.');
     }
@@ -1732,7 +1735,7 @@ function buildUrenstaatPdf(jsPDF, d) {
     var shareOk = canShareFiles();
     var fileBtns = '<button class="btn primary" type="button" data-action="excel">' + (st === 'sent' ? 'Excel opnieuw downloaden' : 'Download Excel') + '</button>' +
       '<button class="btn primary" type="button" data-action="pdf">' + (st === 'sent' ? 'PDF opnieuw downloaden' : 'Download PDF') + '</button>' +
-      (shareOk && st !== 'sent' ? '<button class="btn" type="button" data-action="share">Delen (Excel + PDF)</button>' : '');
+      (shareOk && st !== 'sent' ? '<button class="btn" type="button" data-action="share">Delen (' + shareLabel() + ')</button>' : '');
     if (!days.length) {
       h += '<p class="note">Er zijn geen uren om te versturen.</p>';
     } else if (emailOpen || st === 'sent') {
