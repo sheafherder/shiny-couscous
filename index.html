@@ -181,7 +181,7 @@ a.icon-btn { text-decoration: none; color: var(--ink); }
 .wk input[type="text"] { text-align: center; }
 .wk input:disabled { opacity: 0.4; }
 .sigwrap { background: #FFFFFF; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; }
-#sigPad { display: block; width: 100%; height: 150px; touch-action: none; cursor: crosshair; }
+.sigwrap canvas { display: block; width: 100%; height: 170px; touch-action: none; cursor: crosshair; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 .steps { display: grid; gap: 16px; margin-top: 14px; }
 .step { display: grid; gap: 8px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
 .step h3 { margin: 0; font-size: 0.95rem; font-weight: 600; }
@@ -200,7 +200,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
 .tab svg { width: 22px; height: 22px; }
 .tab[aria-current="page"] { color: var(--accent-text); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .note.ok { color: var(--accent-text); font-weight: 500; }
-.overlay { position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow-y: auto; -webkit-overflow-scrolling: touch;
+.overlay { overscroll-behavior: contain; position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow-y: auto; -webkit-overflow-scrolling: touch;
   padding: max(20px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .overlay[hidden] { display: none; }
 .sheet { max-width: 560px; margin: 0 auto; }
@@ -326,7 +326,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <div class="actions"><button class="btn small ghost" type="button" id="sigClear">Wissen</button></div>
       <p class="hint">Teken met je vinger of muis. Is dit leeg, dan staat er geen handtekening op de Excel.</p>
     </fieldset>
-    <p class="hint" id="verLine">Versie 18-11 10:44</p>
+    <p class="hint" id="verLine">Versie 18-11 10:48</p>
     <p class="err" id="setupErr" role="alert"></p>
     <div class="actions">
       <button class="btn primary" type="submit" id="setupSubmit">Opslaan en beginnen</button>
@@ -1668,20 +1668,25 @@ function buildUrenstaatPdf(jsPDF, d) {
     if (shareCache && shareCache.stamp === st) return shareCache;
     try {
       var x = await makeExcel(key), p = makePdf(key);
-      shareCache = { stamp: st, files: [new File([x.blob], x.name, { type: x.blob.type }), new File([p.blob], p.name, { type: 'application/pdf' })] };
+      var fx = new File([x.blob], x.name, { type: x.blob.type }), fp = new File([p.blob], p.name, { type: 'application/pdf' });
+      /* Some phones refuse certain file types, so find out now what this browser really accepts. */
+      var opts = [[fx, fp], [fp], [fx]].filter(function (f) { try { return navigator.canShare({ files: f }); } catch (e) { return false; } });
+      shareCache = { stamp: st, both: [fx, fp], opts: opts };
     } catch (e) { shareCache = null; }
     return shareCache;
   }
   async function shareBoth(key) {
-    var ready = shareCache && shareCache.stamp === shareStamp(key);
+    var ready = shareCache && shareCache.stamp === shareStamp(key), err1 = null;
     try {
       var c = ready ? shareCache : await prepareShare(key);
-      if (!c) throw { name: 'x' };
-      var m = buildMail(key);
-      await navigator.share({ files: c.files, title: m.subject, text: m.body });
+      if (!c) throw { name: 'BuildError' };
+      if (!c.opts.length) { toast('Deze browser wil de bestanden niet delen. Gebruik Download Excel en Download PDF.'); return; }
+      var files = c.opts[0], m = buildMail(key);
+      await navigator.share({ files: files, title: m.subject, text: m.body });
+      if (files.length === 1) toast('Alleen ' + (files[0].type === 'application/pdf' ? 'de PDF' : 'de Excel') + ' kon gedeeld worden. Download het andere bestand apart.');
     } catch (err) {
       if (err && err.name === 'AbortError') return;
-      toast(ready ? 'Delen lukt niet op dit toestel. Gebruik de downloadknoppen.' : 'De bestanden zijn nu klaar. Tik nog een keer op Delen.');
+      toast((ready ? 'Delen mislukt' : 'De bestanden zijn nu klaar, tik nog een keer op Delen') + (err && err.name && ready ? ' (' + err.name + '). Gebruik de downloadknoppen.' : '.'));
     }
   }
   function buildMail(key) {
