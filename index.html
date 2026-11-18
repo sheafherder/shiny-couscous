@@ -326,7 +326,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
       <div class="actions"><button class="btn small ghost" type="button" id="sigClear">Wissen</button></div>
       <p class="hint">Teken met je vinger of muis. Is dit leeg, dan staat er geen handtekening op de Excel.</p>
     </fieldset>
-    <p class="hint" id="verLine">Versie 18-11 10:53</p>
+    <p class="hint" id="verLine">Versie 18-11 10:58</p>
     <p class="err" id="setupErr" role="alert"></p>
     <div class="actions">
       <button class="btn primary" type="submit" id="setupSubmit">Opslaan en beginnen</button>
@@ -1677,12 +1677,13 @@ function buildUrenstaatPdf(jsPDF, d) {
   }
   /* Each tap tries one sharing variant; a refused variant moves on to the next one on the following tap (a browser uses up the tap on every attempt). */
   var SHARE_KEY = 'urenstaat.share', shareTry = 0;
-  try { shareTry = Math.max(0, Math.min(3, parseInt(localStorage.getItem(SHARE_KEY), 10) || 0)); } catch (e) { }
-  function shareLabel() { return ['Excel + PDF', 'Excel + PDF', 'alleen PDF', 'alleen Excel'][shareTry % 4]; }
+  try { shareTry = Math.max(0, Math.min(4, parseInt(localStorage.getItem(SHARE_KEY), 10) || 0)); } catch (e) { }
+  function shareLabel() { return ['Excel + PDF', 'Excel + PDF', 'alleen PDF', 'alleen PDF', 'alleen Excel'][shareTry % 5]; }
   var SHARE_STEPS = [
     { label: 'Excel + PDF', pick: function (c) { return c.both; }, text: true },
     { label: 'Excel + PDF zonder berichttekst', pick: function (c) { return c.both; }, text: false },
-    { label: 'alleen de PDF', pick: function (c) { return [c.both[1]]; }, text: false },
+    { label: 'alleen de PDF', pick: function (c) { return [c.both[1]]; }, text: true },
+    { label: 'alleen de PDF zonder berichttekst', pick: function (c) { return [c.both[1]]; }, text: false },
     { label: 'alleen de Excel', pick: function (c) { return [c.both[0]]; }, text: false }
   ];
   async function shareBoth(key) {
@@ -1694,6 +1695,8 @@ function buildUrenstaatPdf(jsPDF, d) {
       var step = SHARE_STEPS[shareTry % SHARE_STEPS.length], files = step.pick(c);
       var data = { files: files, title: buildMail(key).subject };
       if (step.text) data.text = buildMail(key).body;
+      /* A share sheet cannot preset the recipient, so put the address on the clipboard: paste it at "Aan". */
+      try { if (adminMail() && navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(adminMail()).catch(function () { }); } catch (e) { }
       try { if (!navigator.canShare(data)) throw { name: 'NotSupported' }; await navigator.share(data); }
       catch (err) {
         if (err && err.name === 'AbortError') return;
